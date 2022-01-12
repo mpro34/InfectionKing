@@ -24,4 +24,4 @@ Later on, the Overmind gets physical abilties from consuming a wight. This inclu
 
 ## Technical Details ##
 
-This will be a 2D platformer written in Rust and SDL2.
+This will be a 2D scroller game written in Rust and using the Amethyst game engine.
