@@ -24,4 +24,7 @@ Later on, the Overmind gets physical abilties from consuming a wight. This inclu
 
 ## Technical Details ##
 
-This will be a 2D scroller game written in Rust and using the Amethyst game engine.
+- Modern C++17
+- Custom 2D Game Engine built with Vulkan (successor to OpenGL).
+- Building the game engine will also require graphics theory discovery and knowledge gain.
+- Use Lua or other Scripting language to easily prototype actual game.
