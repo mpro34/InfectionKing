@@ -25,6 +25,6 @@ Later on, the Overmind gets physical abilties from consuming a wight. This inclu
 ## Technical Details ##
 
 - Modern C++17
-- Custom 2D Game Engine built with Vulkan (successor to OpenGL).
+- Custom 3D Game Engine built with OpenGL.
 - Building the game engine will also require graphics theory discovery and knowledge gain.
 - Use Lua or other Scripting language to easily prototype actual game.
