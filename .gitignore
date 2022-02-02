@@ -1,3 +1,6 @@
 DracoaEngine/common/*
 DracoaEngine/Debug/*
 DracoaEngine/.vs/*
+*.exe
+*.ilk
+*.pdb
