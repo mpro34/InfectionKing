@@ -22,6 +22,17 @@ The Overminds and only run and dodge from a distance.
 
 Later on, the Overmind gets physical abilties from consuming a wight. This includes the abilities to attack and defend without wights, etc.
 
+## Gameplay ##
+- 3rd Person action/shooter
+- You start as a newly evolved Overmind who can only melee and shoot pheremones. You have basic actions like running and jumping.
+- Enemies will be wild Dracoa or mysterious Overminds.
+- The weakest Dracoa (wights), can be consumed using your pheremones to attract them. Pheremones do little damage to wild Dracoa.
+- TODO: Mock HUD
+
+## Goal ##
+- The player's goal is to get strong enough to defeat the Overmind King, thus becoming the new king.
+- In order to get strong enough, gain new abilities from consuming different types of wights.
+
 ## Technical Details ##
 
 - Modern C++17
