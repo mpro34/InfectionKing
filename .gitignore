@@ -1,1 +1,3 @@
-DracoaEngine/*
+DracoaEngine/common/*
+DracoaEngine/Debug/*
+DracoaEngine/.vs/*
