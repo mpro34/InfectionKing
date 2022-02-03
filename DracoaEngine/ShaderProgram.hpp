@@ -5,18 +5,18 @@
 #include <string>
 #include <map>
 
+enum class ShaderType
+{
+	VERTEX = 0,
+	FRAGMENT,
+	PROGRAM
+};
+
 class ShaderProgram
 {
 public:
 	ShaderProgram();
 	~ShaderProgram();
-
-	enum ShaderType
-	{
-		VERTEX = 0,
-		FRAGMENT,
-		PROGRAM
-	};
 
 	bool loadShaders(const char* vsFilesname, const char* fsFilename);
 	void use();

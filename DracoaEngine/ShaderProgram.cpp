@@ -25,20 +25,20 @@ bool ShaderProgram::loadShaders(const char* vsFilesname, const char* fsFilename)
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, 1, &vsSourcePtr, nullptr);
     glCompileShader(vs);
-    checkCompileErrors(vs, VERTEX);
+    checkCompileErrors(vs, ShaderType::VERTEX);
 
     // Create, assign, and compile the fragment shader
     GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fs, 1, &fsSourcePtr, nullptr);
     glCompileShader(fs);
-    checkCompileErrors(fs, FRAGMENT);
+    checkCompileErrors(fs, ShaderType::FRAGMENT);
 
     // Create the shader program with all compiled shaders above (vertex and fragment)
     m_Handle = glCreateProgram();
     glAttachShader(m_Handle, vs);
     glAttachShader(m_Handle, fs);
     glLinkProgram(m_Handle);
-    checkCompileErrors(m_Handle, PROGRAM);
+    checkCompileErrors(m_Handle, ShaderType::PROGRAM);
 
     // Once shader program is created, we can free the shader memory before entering the game loop.
     glDeleteShader(vs);
@@ -83,7 +83,7 @@ std::string ShaderProgram::fileToString(const std::string& filename)
 void ShaderProgram::checkCompileErrors(GLuint shader, ShaderType type)
 {
     int status = 0;
-    if (type == PROGRAM)
+    if (type == ShaderType::PROGRAM)
     {
         glGetProgramiv(m_Handle, GL_LINK_STATUS, &status);
         if (status == GL_FALSE)
