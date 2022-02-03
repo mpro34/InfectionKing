@@ -4,30 +4,13 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "ShaderProgram.hpp"
+
 const char* ENGINE_TITLE = "Dracoa Engine v1.0";
 const int gWindowWidth = 800;
 const int gWindowHeight = 600;
 GLFWwindow* gWindow = nullptr;
 bool gWireFrame = false;
-
-// Triangle Vertex Shader (XYZW)
-const GLchar* vertexShaderSrc =
-"#version 330 core\n"
-"layout (location = 0) in vec3 pos;"
-"void main()"
-"{"
-"    gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);"
-"}";
-
-// Triangle Fragment Shader (RGBA)
-const GLchar* fragmentShaderSrc =
-"#version 330 core\n"
-"out vec4 frag_color;"
-"void main()"
-"{"
-"    frag_color = vec4(0.35f, 0.96f, 0.3f, 1.0f);"
-"}";
-
 
 void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode);
 void showFPS(GLFWwindow* window);
@@ -79,47 +62,8 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-
-    GLint result;
-    GLchar infoLog[512];
-    // Create, assign, and compile the vertex shader
-    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vs, 1, &vertexShaderSrc, nullptr);
-    glCompileShader(vs);
-    glGetShaderiv(vs, GL_COMPILE_STATUS, &result);
-    if (!result)
-    {
-        glGetShaderInfoLog(vs, sizeof(infoLog), nullptr, infoLog);
-        std::cout << "Error! Vertex shader failed to compile. " << infoLog << std::endl;
-    }
-
-    // Create, assign, and compile the fragment shader
-    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fs, 1, &fragmentShaderSrc, nullptr);
-    glCompileShader(fs);
-    glGetShaderiv(fs, GL_COMPILE_STATUS, &result);
-    if (!result)
-    {
-        glGetShaderInfoLog(fs, sizeof(infoLog), nullptr, infoLog);
-        std::cout << "Error! Fragment shader failed to compile. " << infoLog << std::endl;
-    }
-
-    // Create the shader program with all compiled shaders above (vertex and fragment)
-    GLuint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vs);
-    glAttachShader(shaderProgram, fs);
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &result);
-    if (!result)
-    {
-        glGetProgramInfoLog(shaderProgram, sizeof(infoLog), nullptr, infoLog);
-        std::cout << "Error! Shader program linker failure. " << infoLog << std::endl;
-    }
-
-    // Once shader program is created, we can free the shader memory before entering the game loop.
-    glDeleteShader(vs);
-    glDeleteShader(fs);
+    ShaderProgram shaderProgram;
+    shaderProgram.loadShaders("shaders/basic.vert", "shaders/basic.frag");
 
     /* end region */
 
@@ -132,7 +76,8 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
+        shaderProgram.use();
+
         glBindVertexArray(vao);
         // Tell opengl to draw triangles from the vao and how many vertices.
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -142,7 +87,6 @@ int main()
     }
 
     // Clean up shader memory
-    glDeleteProgram(shaderProgram);
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
     glDeleteBuffers(1, &ibo);
