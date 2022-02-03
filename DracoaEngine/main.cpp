@@ -8,6 +8,7 @@ const char* ENGINE_TITLE = "Dracoa Engine v1.0";
 const int gWindowWidth = 800;
 const int gWindowHeight = 600;
 GLFWwindow* gWindow = nullptr;
+bool gWireFrame = false;
 
 // Triangle Vertex Shader (XYZW)
 const GLchar* vertexShaderSrc =
@@ -21,10 +22,10 @@ const GLchar* vertexShaderSrc =
 // Triangle Fragment Shader (RGBA)
 const GLchar* fragmentShaderSrc =
 "#version 330 core\n"
-"out vec4 color;"
+"out vec4 frag_color;"
 "void main()"
 "{"
-"    color = vec4(0.35f, 0.96f, 0.3f, 1.0f);"
+"    frag_color = vec4(0.35f, 0.96f, 0.3f, 1.0f);"
 "}";
 
 
@@ -41,11 +42,16 @@ int main()
     }
 
     /* begin region - Draw a Triangle */
-    // Each vertiex defined in 3d space: x, y, z
+    // Drawing two triangles using a single vertex buffer
     GLfloat vertices[] = {
-        0.0f, 0.5f, 0.0f, // Top
-        0.5f, -0.5f, 0.0f, // Right
-        -0.5f, -0.5f, 0.0f, // Left
+        // Triangle 0
+        -0.5f,   0.5f,   0.0f,
+        0.5f,    0.5f,   0.0f,
+        0.5f,   -0.5f,   0.0f,
+        // Triangle 1
+        -0.5f,   0.5f,   0.0f,
+         0.5f,  -0.5f,   0.0f,
+        -0.5f,  -0.5f,   0.0f,
     };
 
     // Send vertices to GPU and store in buffer, vao vs vbo?
@@ -56,6 +62,7 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     // Pass vertices to created gpu vertex buffer
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
     // Create a vertex array object for faster caching
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
@@ -64,6 +71,7 @@ int main()
     // The "stride" determines where in the data array is this attributes data.
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(0);
+
 
     GLint result;
     GLchar infoLog[512];
@@ -120,7 +128,7 @@ int main()
         glUseProgram(shaderProgram);
         glBindVertexArray(vao);
         // Tell opengl to draw triangles from the vao and how many vertices.
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
 
         glfwSwapBuffers(gWindow); // Allows for double buffering, which eliminates screen tearing
@@ -183,6 +191,19 @@ void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, GL_TRUE);
+    }
+
+    if (key == GLFW_KEY_F && action == GLFW_PRESS)
+    {
+        gWireFrame = !gWireFrame;
+        if (gWireFrame)
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }
+        else
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
     }
 }
 
