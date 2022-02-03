@@ -78,6 +78,15 @@ int main()
 
         shaderProgram.use();
 
+        GLfloat time = glfwGetTime();
+        GLfloat blueColor = (sin(time) / 2) + 0.5f;
+        glm::vec2 pos;
+        pos.x = sin(time) / 2;
+        pos.y = cos(time) / 2;
+        // Must set uniforms AFTER the shader program is in use.
+        shaderProgram.setUniform("vertColor", glm::vec4(0.0f, 0.0f, blueColor, 1.0f));
+        shaderProgram.setUniform("posOffset", pos);
+
         glBindVertexArray(vao);
         // Tell opengl to draw triangles from the vao and how many vertices.
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
