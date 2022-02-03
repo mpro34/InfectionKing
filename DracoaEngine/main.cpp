@@ -44,18 +44,20 @@ int main()
     /* begin region - Draw a Triangle */
     // Drawing two triangles using a single vertex buffer
     GLfloat vertices[] = {
-        // Triangle 0
         -0.5f,   0.5f,   0.0f,
         0.5f,    0.5f,   0.0f,
         0.5f,   -0.5f,   0.0f,
-        // Triangle 1
-        -0.5f,   0.5f,   0.0f,
-         0.5f,  -0.5f,   0.0f,
-        -0.5f,  -0.5f,   0.0f,
+        -0.5f,  -0.5f,   0.0f
+    };
+
+    // Use an index or element buffer to avoid drawing the same vertex more than once!
+    GLuint indices[] = {
+        0, 1, 2,       // Triangle 0
+        0, 2, 3,       // Triangle 1
     };
 
     // Send vertices to GPU and store in buffer, vao vs vbo?
-    GLuint vbo, vao;
+    GLuint vbo, ibo, vao;
     // Create a chunk(buffer) of memory in the gpu for us
     glGenBuffers(1, &vbo);
     // Make the vbo the current buffer - 1 active at a time
@@ -71,6 +73,11 @@ int main()
     // The "stride" determines where in the data array is this attributes data.
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(0);
+
+    // Generate and bind the index/element buffer object
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 
     GLint result;
@@ -128,7 +135,7 @@ int main()
         glUseProgram(shaderProgram);
         glBindVertexArray(vao);
         // Tell opengl to draw triangles from the vao and how many vertices.
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
         glfwSwapBuffers(gWindow); // Allows for double buffering, which eliminates screen tearing
@@ -138,6 +145,7 @@ int main()
     glDeleteProgram(shaderProgram);
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ibo);
 
     glfwTerminate();
     return 0;
