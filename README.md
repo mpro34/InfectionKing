@@ -39,3 +39,10 @@ Later on, the Overmind gets physical abilties from consuming a wight. This inclu
 - Custom 3D Game Engine built with OpenGL.
 - Building the game engine will also require graphics theory discovery and knowledge gain.
 - Use Lua or other Scripting language to easily prototype actual game.
+
+## Progress ##
+
+#### Version 1.0 ####
+Version 1.0 of the Dracoa Engine shows rendering of a textured 3d cube with a first-person camera.
+![alt text](screenshots/engine_v1.0.jpg)
+
