@@ -27,12 +27,18 @@
     <ClCompile Include="Texture2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderProgram.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Texture2D.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -57,6 +63,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="textures\wooden_crate.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\grid.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -7,6 +7,7 @@
 
 #include "ShaderProgram.hpp"
 #include "Texture2D.hpp"
+#include "Camera.hpp"
 
 const char* ENGINE_TITLE = "Dracoa Engine v1.0";
 int gWindowWidth = 1024;
@@ -14,10 +15,17 @@ int gWindowHeight = 768;
 GLFWwindow* gWindow = nullptr;
 bool gWireFrame = false;
 const std::string texture1 = "textures/wooden_crate.jpg";
-//const std::string texture2 = "textures/crate.jpg";
+const std::string texture2 = "textures/grid.jpg";
+
+OrbitCamera orbitCamera;
+float gYaw = 0.0f;
+float gPitch = 0.0f;
+float gRadius = 10.0f;
+const float MOUSE_SENSITIVITY = 0.25f;
 
 void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode);
 void glfw_OnFrameBufferSize(GLFWwindow* window, int width, int height);
+void glfw_onMouseMove(GLFWwindow* window, double posX, double posY);
 void showFPS(GLFWwindow* window);
 bool initOpenGL();
 
@@ -83,7 +91,8 @@ int main()
            1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
     };
 
-    glm::vec3 cubePos = glm::vec3(0.0f, 0.0f, -5.0f);
+    glm::vec3 cubePos = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 floorPos = glm::vec3(0.0f, -1.0f, 0.0f);
 
     // Send vertices to GPU and store in buffer, vao vs vbo?
     GLuint vbo, vao;
@@ -113,8 +122,8 @@ int main()
     Texture2D plane_texture;
     plane_texture.loadTexture(texture1, true);
 
-    //Texture2D crate_texture;
-    //crate_texture.loadTexture(texture2, true);
+    Texture2D grid_texture;
+    grid_texture.loadTexture(texture2, true);
 
     /* end region */
 
@@ -134,21 +143,19 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         plane_texture.bind(0);
-        //crate_texture.bind(1);
+        //grid_texture.bind(1);
 
-        cubeAngle += (float)(deltaTime * 50.0f);
-        if (cubeAngle >= 360)
-        {
-            cubeAngle = 0;
-        }
         glm::mat4 model(1.0), view(1.0), projection(1.0);
-        // Translate model back by cubePos and rotate it by cubeAngle, every frame. Pass it to vertex shader. Rotate first, then translate (evaluated Right -> Left)
-        model = glm::translate(model, cubePos) * glm::rotate(model, glm::radians(cubeAngle), glm::vec3(0.0f, 1.0f, 0.0));
         
-        glm::vec3 camPos(0.0f, 0.0f, 0.0f);
-        glm::vec3 targetPos(0.0f, 0.0f, -1.0f);
-        glm::vec3 up(0.0f, 1.0f, 0.0f);
-        view = glm::lookAt(camPos, targetPos, up);
+        // Setup orbit camera before using it.
+        orbitCamera.setLookAt(cubePos);
+        orbitCamera.rotate(gYaw, gPitch);
+        orbitCamera.setRadius(gRadius);
+
+        // Translate model back by cubePos and rotate it by cubeAngle, every frame. Pass it to vertex shader. Rotate first, then translate (evaluated Right -> Left)
+        model = glm::translate(model, cubePos);
+        
+        view = orbitCamera.getViewMatrix();
 
         projection = glm::perspective(glm::radians(45.0f), (float)gWindowWidth / (float)gWindowHeight, 0.1f, 100.0f);    
 
@@ -161,7 +168,14 @@ int main()
 
         glBindVertexArray(vao);
         // Tell opengl to draw triangles from the vao and how many vertices.
-        glDrawArrays(GL_TRIANGLES, 6, 36);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        grid_texture.bind(0);
+
+        model = glm::translate(model, floorPos) * glm::scale(model, glm::vec3(10.0f, 0.01f, 10.0f));
+        shaderProgram.setUniform("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
         glBindVertexArray(0);
 
         glfwSwapBuffers(gWindow); // Allows for double buffering, which eliminates screen tearing
@@ -204,6 +218,7 @@ bool initOpenGL()
     glfwMakeContextCurrent(gWindow);
 
     glfwSetKeyCallback(gWindow, glfw_onKey);
+    glfwSetCursorPosCallback(gWindow, glfw_onMouseMove);
 
     glewExperimental = GL_TRUE; // Must set to true in order to use modern opengl
     if (glewInit() != GLEW_OK)
@@ -249,6 +264,30 @@ void glfw_OnFrameBufferSize(GLFWwindow* window, int width, int height)
     gWindowWidth = width;
     gWindowHeight = height;
     glViewport(0, 0, width, height);
+}
+
+void glfw_onMouseMove(GLFWwindow* window, double posX, double posY)
+{
+    static glm::vec2 lastMousePos = glm::vec2(0, 0);
+
+    // Update angles based on Left Mouse Button input to orbit around the cube
+    if (glfwGetMouseButton(gWindow, GLFW_MOUSE_BUTTON_LEFT) == 1)
+    {
+        // each pixel represents a quarter of a degree rotation (this is our mouse sensitivity)
+        gYaw -= ((float)posX - lastMousePos.x) * MOUSE_SENSITIVITY;
+        gPitch += ((float)posY - lastMousePos.y) * MOUSE_SENSITIVITY;
+    }
+
+    // Change orbit camera radius with the Right Mouse Button
+    if (glfwGetMouseButton(gWindow, GLFW_MOUSE_BUTTON_RIGHT) == 1)
+    {
+        float dx = 0.01f * ((float)posX - lastMousePos.x);
+        float dy = 0.01f * ((float)posY - lastMousePos.y);
+        gRadius += dx - dy;
+    }
+
+    lastMousePos.x = (float)posX;
+    lastMousePos.y = (float)posY;
 }
 
 // Show the FPS and other stats for the current window
