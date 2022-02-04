@@ -37,6 +37,7 @@
     <Image Include="textures\airplane.png" />
     <Image Include="textures\airplane_512x512.png" />
     <Image Include="textures\crate.jpg" />
+    <Image Include="textures\wooden_crate.jpg" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
