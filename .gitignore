@@ -1,4 +1,5 @@
 DracoaEngine/common/*
+DracoaEngine/textures/*
 DracoaEngine/Debug/*
 DracoaEngine/.vs/*
 *.exe

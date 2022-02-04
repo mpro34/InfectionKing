@@ -21,15 +21,22 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="Texture2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderProgram.hpp" />
+    <ClInclude Include="Texture2D.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="shaders\basic.frag">
       <FileType>Document</FileType>
     </Text>
     <None Include="shaders\basic.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\airplane.png" />
+    <Image Include="textures\airplane_512x512.png" />
+    <Image Include="textures\crate.jpg" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -85,14 +92,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>.\Debug</OutDir>
+    <OutDir>.\Debug\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>.\Debug</OutDir>
+    <OutDir>.\Debug\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

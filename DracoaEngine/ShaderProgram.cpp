@@ -109,6 +109,11 @@ void ShaderProgram::checkCompileErrors(GLuint shader, ShaderType type)
     }
 }
 
+GLuint ShaderProgram::getProgram() const
+{
+    return m_Handle;
+}
+
 GLint ShaderProgram::getUniformLocation(const GLchar* name)
 {
     std::map<std::string, GLint>::iterator it = m_UniformLocations.find(name);

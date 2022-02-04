@@ -5,12 +5,15 @@
 #include <GLFW/glfw3.h>
 
 #include "ShaderProgram.hpp"
+#include "Texture2D.hpp"
 
 const char* ENGINE_TITLE = "Dracoa Engine v1.0";
 const int gWindowWidth = 800;
 const int gWindowHeight = 600;
 GLFWwindow* gWindow = nullptr;
 bool gWireFrame = false;
+const std::string texture1 = "textures/airplane.png";
+const std::string texture2 = "textures/crate.jpg";
 
 void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode);
 void showFPS(GLFWwindow* window);
@@ -27,10 +30,11 @@ int main()
     /* begin region - Draw a Triangle */
     // Drawing two triangles using a single vertex buffer
     GLfloat vertices[] = {
-        -0.5f,   0.5f,   0.0f,
-        0.5f,    0.5f,   0.0f,
-        0.5f,   -0.5f,   0.0f,
-        -0.5f,  -0.5f,   0.0f
+        // position             // texture uv coords
+        -0.5f,   0.5f,   0.0f,  0.0f, 1.0f, // top left
+        0.5f,    0.5f,   0.0f,  1.0f, 1.0f, // top right
+        0.5f,   -0.5f,   0.0f,  1.0f, 0.0f, // bottom right
+        -0.5f,  -0.5f,   0.0f,  0.0f, 0.0f  // bottom left
     };
 
     // Use an index or element buffer to avoid drawing the same vertex more than once!
@@ -54,8 +58,12 @@ int main()
 
     // Define the attributes of the vertex data (how should the GPU interpret the data?)
     // The "stride" determines where in the data array is this attributes data.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), nullptr);
     glEnableVertexAttribArray(0);
+
+    // Texture coord
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
 
     // Generate and bind the index/element buffer object
     glGenBuffers(1, &ibo);
@@ -64,6 +72,12 @@ int main()
 
     ShaderProgram shaderProgram;
     shaderProgram.loadShaders("shaders/basic.vert", "shaders/basic.frag");
+
+    Texture2D plane_texture;
+    plane_texture.loadTexture(texture1, true);
+
+    Texture2D crate_texture;
+    crate_texture.loadTexture(texture2, true);
 
     /* end region */
 
@@ -76,16 +90,23 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT);
 
+        plane_texture.bind(0);
+        crate_texture.bind(1);
+
         shaderProgram.use();
 
-        GLfloat time = glfwGetTime();
-        GLfloat blueColor = (sin(time) / 2) + 0.5f;
-        glm::vec2 pos;
-        pos.x = sin(time) / 2;
-        pos.y = cos(time) / 2;
-        // Must set uniforms AFTER the shader program is in use.
-        shaderProgram.setUniform("vertColor", glm::vec4(0.0f, 0.0f, blueColor, 1.0f));
-        shaderProgram.setUniform("posOffset", pos);
+        glUniform1i(glGetUniformLocation(shaderProgram.getProgram(), "myTexture1"), 0);
+        glUniform1i(glGetUniformLocation(shaderProgram.getProgram(), "myTexture2"), 1);
+
+        // Offset verticies based on time
+        //GLfloat time = glfwGetTime();
+        //GLfloat blueColor = (sin(time) / 2) + 0.5f;
+        //glm::vec2 pos;
+        //pos.x = sin(time) / 2;
+        //pos.y = cos(time) / 2;
+        //// Must set uniforms AFTER the shader program is in use.
+        //shaderProgram.setUniform("vertColor", glm::vec4(0.0f, 0.0f, blueColor, 1.0f));
+        //shaderProgram.setUniform("posOffset", pos);
 
         glBindVertexArray(vao);
         // Tell opengl to draw triangles from the vao and how many vertices.
