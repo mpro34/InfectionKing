@@ -3,13 +3,14 @@
 #include <stb_image/stb_image.h>
 #include <iostream>
 
-Texture2D::Texture2D()
+Texture2D::Texture2D() :
+	m_Texture(0)
 {
 }
 
 Texture2D::~Texture2D()
 {
-
+	glDeleteTextures(1, &m_Texture);
 }
 
 bool Texture2D::loadTexture(const std::string& filename, bool generateMipMaps)
@@ -69,7 +70,15 @@ bool Texture2D::loadTexture(const std::string& filename, bool generateMipMaps)
 
 void Texture2D::bind(GLuint texUnit)
 {
+	assert(texUnit >= 0 && texUnit < 32);
+
 	// Bind to the input texture unit; 16+ texture units on a modern graphics card!
 	glActiveTexture(GL_TEXTURE0 + texUnit);
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
+}
+
+void Texture2D::unbind(GLuint texUnit)
+{
+	glActiveTexture(GL_TEXTURE0 + texUnit);
+	glBindTexture(GL_TEXTURE_2D, 0); // Disconnects the texture in the shader
 }

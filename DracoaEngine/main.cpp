@@ -8,24 +8,21 @@
 #include "ShaderProgram.hpp"
 #include "Texture2D.hpp"
 #include "Camera.hpp"
+#include "Mesh.hpp"
 
-const char* ENGINE_TITLE = "Dracoa Engine v1.0";
+const char* ENGINE_TITLE = "Dracoa Engine v1.1";
 int gWindowWidth = 1024;
 int gWindowHeight = 768;
 GLFWwindow* gWindow = nullptr;
 bool gWireFrame = false;
-const std::string texture1 = "textures/wooden_crate.jpg";
-const std::string texture2 = "textures/grid.jpg";
 
-//OrbitCamera orbitCamera;
-FPSCamera fpsCamera(glm::vec3(0.0f, 0.0f, 5.0f));
+FPSCamera fpsCamera(glm::vec3(0.0f, 3.0f, 10.0f));
 const double ZOOM_SENSITIVITY = -3.0;
 const float MOVE_SPEED = 5.0f; // units per second
 const float MOUSE_SENSITIVITY = 0.1f;
 
 void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode);
 void glfw_OnFrameBufferSize(GLFWwindow* window, int width, int height);
-void glfw_onMouseMove(GLFWwindow* window, double posX, double posY);
 void glfw_onMouseScroll(GLFWwindow* window, double deltaX, double deltaY);
 void update(double elapsedTime);
 void showFPS(GLFWwindow* window);
@@ -39,97 +36,39 @@ int main()
         return -1;
     }
 
-    /* begin region - Draw a Triangle */
-    // Drawing two triangles using a single vertex buffer
-    GLfloat vertices[] = {
-        // position             // texture uv coords
-        
-        // front face
-        -1.0f,  1.0f,  1.0f, 0.0f, 1.0f,
-         1.0f, -1.0f,  1.0f, 1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f, 1.0f, 1.0f,
-        -1.0f,  1.0f,  1.0f, 0.0f, 1.0f,
-        -1.0f, -1.0f,  1.0f, 0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f, 1.0f, 0.0f,
-
-         // back face
-         -1.0f,  1.0f, -1.0f, 0.0f, 1.0f,
-          1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
-          1.0f,  1.0f, -1.0f, 1.0f, 1.0f,
-         -1.0f,  1.0f, -1.0f, 0.0f, 1.0f,
-         -1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
-          1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
-
-          // left face
-          -1.0f,  1.0f, -1.0f, 0.0f, 1.0f,
-          -1.0f, -1.0f,  1.0f, 1.0f, 0.0f,
-          -1.0f,  1.0f,  1.0f, 1.0f, 1.0f,
-          -1.0f,  1.0f, -1.0f, 0.0f, 1.0f,
-          -1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
-          -1.0f, -1.0f,  1.0f, 1.0f, 0.0f,
-
-          // right face
-           1.0f,  1.0f,  1.0f, 0.0f, 1.0f,
-           1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
-           1.0f,  1.0f, -1.0f, 1.0f, 1.0f,
-           1.0f,  1.0f,  1.0f, 0.0f, 1.0f,
-           1.0f, -1.0f,  1.0f, 0.0f, 0.0f,
-           1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
-
-           // top face
-          -1.0f,  1.0f, -1.0f, 0.0f, 1.0f,
-           1.0f,  1.0f,  1.0f, 1.0f, 0.0f,
-           1.0f,  1.0f, -1.0f, 1.0f, 1.0f,
-          -1.0f,  1.0f, -1.0f, 0.0f, 1.0f,
-          -1.0f,  1.0f,  1.0f, 0.0f, 0.0f,
-           1.0f,  1.0f,  1.0f, 1.0f, 0.0f,
-
-           // bottom face
-          -1.0f, -1.0f,  1.0f, 0.0f, 1.0f,
-           1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
-           1.0f, -1.0f,  1.0f, 1.0f, 1.0f,
-          -1.0f, -1.0f,  1.0f, 0.0f, 1.0f,
-          -1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
-           1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
-    };
-
-    glm::vec3 cubePos = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 floorPos = glm::vec3(0.0f, -1.0f, 0.0f);
-
-    // Send vertices to GPU and store in buffer, vao vs vbo?
-    GLuint vbo, vao;
-    // Create a chunk(buffer) of memory in the gpu for us
-    glGenBuffers(1, &vbo);
-    // Make the vbo the current buffer - 1 active at a time
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    // Pass vertices to created gpu vertex buffer
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // Create a vertex array object for faster caching
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    // Define the attributes of the vertex data (how should the GPU interpret the data?)
-    // The "stride" determines where in the data array is this attributes data.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), nullptr);
-    glEnableVertexAttribArray(0);
-
-    // Texture coord
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-
     ShaderProgram shaderProgram;
     shaderProgram.loadShaders("shaders/basic.vert", "shaders/basic.frag");
 
-    Texture2D plane_texture;
-    plane_texture.loadTexture(texture1, true);
+    // Load meshes and textures
+    const int numModels = 4;
+    Mesh mesh[numModels];
+    Texture2D texture[numModels];
 
-    Texture2D grid_texture;
-    grid_texture.loadTexture(texture2, true);
+    mesh[0].loadOBJ("models/crate.obj");
+    mesh[1].loadOBJ("models/woodcrate.obj");
+    mesh[2].loadOBJ("models/robot.obj");
+    mesh[3].loadOBJ("models/floor.obj");
 
-    /* end region */
+    texture[0].loadTexture("textures/crate.jpg", true);
+    texture[1].loadTexture("textures/woodcrate_diffuse.jpg", true);
+    texture[2].loadTexture("textures/robot_diffuse.jpg", true);
+    texture[3].loadTexture("textures/tile_floor.jpg", true);
 
-    float cubeAngle = 0.0f;
+    glm::vec3 modelPos[] = {
+        glm::vec3(-2.5f, 1.0f, 0.0f),	// crate1
+        glm::vec3(2.5f, 1.0f, 0.0f),	// crate2
+        glm::vec3(0.0f, 0.0f, -2.0f),	// robot
+        glm::vec3(0.0f, 0.0f, 0.0f)		// floor
+    };
+
+    // Model scale
+    glm::vec3 modelScale[] = {
+        glm::vec3(1.0f, 1.0f, 1.0f),	// crate1
+        glm::vec3(1.0f, 1.0f, 1.0f),	// crate2
+        glm::vec3(1.0f, 1.0f, 1.0f),	// robot
+        glm::vec3(10.0f, 1.0f, 10.0f)	// floor
+    };
+
     double lastTime = glfwGetTime();
 
     // Main loop
@@ -145,43 +84,31 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        plane_texture.bind(0);
-
         glm::mat4 model(1.0), view(1.0), projection(1.0);
-
-        // Translate model back by cubePos and rotate it by cubeAngle, every frame. Pass it to vertex shader. Rotate first, then translate (evaluated Right -> Left)
-        model = glm::translate(model, cubePos);
         
         view = fpsCamera.getViewMatrix();
 
-        projection = glm::perspective(glm::radians(fpsCamera.getFOV()), (float)gWindowWidth / (float)gWindowHeight, 0.1f, 100.0f);    
+        projection = glm::perspective(glm::radians(fpsCamera.getFOV()), (float)gWindowWidth / (float)gWindowHeight, 0.1f, 200.0f);    
 
         shaderProgram.use();
 
         // Pass Model, View and Projection matricies to vertex shader
-        shaderProgram.setUniform("model", model);
         shaderProgram.setUniform("view", view);
         shaderProgram.setUniform("projection", projection);
 
-        glBindVertexArray(vao);
-        // Tell opengl to draw triangles from the vao and how many vertices.
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (int i = 0; i < numModels; i++)
+        {
+            model = glm::translate(glm::mat4(1.0), modelPos[i]) * glm::scale(glm::mat4(1.0), modelScale[i]);
+            shaderProgram.setUniform("model", model);
 
-        grid_texture.bind(0);
-
-        model = glm::translate(model, floorPos) * glm::scale(model, glm::vec3(10.0f, 0.01f, 10.0f));
-        shaderProgram.setUniform("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        glBindVertexArray(0);
+            texture[i].bind(0);		// set the texture before drawing.  Our simple OBJ mesh loader does not do materials yet.
+            mesh[i].draw();			// Render the OBJ mesh
+            texture[i].unbind(0);
+        }
 
         glfwSwapBuffers(gWindow); // Allows for double buffering, which eliminates screen tearing
         lastTime = currentTime;
     }
-
-    // Clean up shader memory
-    glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
 
     glfwTerminate();
     return 0;
@@ -214,23 +141,23 @@ bool initOpenGL()
     // Make the created window current to draw to.
     glfwMakeContextCurrent(gWindow);
 
+    // Must set to true in order to use modern opengl
+    glewExperimental = GL_TRUE;
+    if (glewInit() != GLEW_OK)
+    {
+        std::cerr << "GLEW initialization failed" << std::endl;
+        return false;
+    }
+
     glfwSetKeyCallback(gWindow, glfw_onKey);
-    glfwSetCursorPosCallback(gWindow, glfw_onMouseMove);
     glfwSetScrollCallback(gWindow, glfw_onMouseScroll);
 
     // Hides and grabs cursor, unlimited movement
     glfwSetInputMode(gWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPos(gWindow, gWindowWidth / 2.0f, gWindowHeight / 2.0f);
 
-    glewExperimental = GL_TRUE; // Must set to true in order to use modern opengl
-    if (glewInit() != GLEW_OK)
-    {
-        std::cerr << "GLEW initialization failed" << std::endl;
-
-        return false;
-    }
-
     glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
+
     glViewport(0, 0, gWindowWidth, gWindowHeight);
     //Enable the depth buffer to show depth in 3D
     glEnable(GL_DEPTH_TEST);
@@ -266,30 +193,6 @@ void glfw_OnFrameBufferSize(GLFWwindow* window, int width, int height)
     gWindowWidth = width;
     gWindowHeight = height;
     glViewport(0, 0, width, height);
-}
-
-void glfw_onMouseMove(GLFWwindow* window, double posX, double posY)
-{
-    //static glm::vec2 lastMousePos = glm::vec2(0, 0);
-
-    //// Update angles based on Left Mouse Button input to orbit around the cube
-    //if (glfwGetMouseButton(gWindow, GLFW_MOUSE_BUTTON_LEFT) == 1)
-    //{
-    //    // each pixel represents a quarter of a degree rotation (this is our mouse sensitivity)
-    //    gYaw -= ((float)posX - lastMousePos.x) * MOUSE_SENSITIVITY;
-    //    gPitch += ((float)posY - lastMousePos.y) * MOUSE_SENSITIVITY;
-    //}
-
-    //// Change orbit camera radius with the Right Mouse Button
-    //if (glfwGetMouseButton(gWindow, GLFW_MOUSE_BUTTON_RIGHT) == 1)
-    //{
-    //    float dx = 0.01f * ((float)posX - lastMousePos.x);
-    //    float dy = 0.01f * ((float)posY - lastMousePos.y);
-    //    gRadius += dx - dy;
-    //}
-
-    //lastMousePos.x = (float)posX;
-    //lastMousePos.y = (float)posY;
 }
 
 // Called by GLFW when the mouse wheel is rotated

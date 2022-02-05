@@ -30,6 +30,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderProgram.hpp">
@@ -39,6 +42,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Camera.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -66,6 +72,15 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="textures\grid.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\robot_diffuse.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\tile_floor.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\woodcrate_diffuse.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
