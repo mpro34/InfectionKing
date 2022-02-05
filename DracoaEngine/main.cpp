@@ -10,7 +10,7 @@
 #include "Camera.hpp"
 #include "Mesh.hpp"
 
-const char* ENGINE_TITLE = "Dracoa Engine v1.1";
+const char* ENGINE_TITLE = "Dracoa Engine v1.2";
 int gWindowWidth = 1024;
 int gWindowHeight = 768;
 GLFWwindow* gWindow = nullptr;
@@ -21,6 +21,7 @@ const double ZOOM_SENSITIVITY = -3.0;
 const float MOVE_SPEED = 5.0f; // units per second
 const float MOUSE_SENSITIVITY = 0.1f;
 
+// Function Prototypes
 void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode);
 void glfw_OnFrameBufferSize(GLFWwindow* window, int width, int height);
 void glfw_onMouseScroll(GLFWwindow* window, double deltaX, double deltaY);
@@ -36,11 +37,14 @@ int main()
         return -1;
     }
 
-    ShaderProgram shaderProgram;
-    shaderProgram.loadShaders("shaders/basic.vert", "shaders/basic.frag");
+    ShaderProgram lightShader;
+    lightShader.loadShaders("shaders/basic.vert", "shaders/basic.frag");
+
+    ShaderProgram lightingShader;
+    lightingShader.loadShaders("shaders/lighting.vert", "shaders/lighting.frag");
 
     // Load meshes and textures
-    const int numModels = 4;
+    const int numModels = 6;
     Mesh mesh[numModels];
     Texture2D texture[numModels];
 
@@ -48,17 +52,24 @@ int main()
     mesh[1].loadOBJ("models/woodcrate.obj");
     mesh[2].loadOBJ("models/robot.obj");
     mesh[3].loadOBJ("models/floor.obj");
+    mesh[4].loadOBJ("models/bowling_pin.obj");
+    mesh[5].loadOBJ("models/bunny.obj");
 
     texture[0].loadTexture("textures/crate.jpg", true);
     texture[1].loadTexture("textures/woodcrate_diffuse.jpg", true);
     texture[2].loadTexture("textures/robot_diffuse.jpg", true);
     texture[3].loadTexture("textures/tile_floor.jpg", true);
+    texture[4].loadTexture("textures/AMF.tga", true);
+    texture[5].loadTexture("textures/bunny_diffuse.jpg", true);
 
+    // Model Positions
     glm::vec3 modelPos[] = {
-        glm::vec3(-2.5f, 1.0f, 0.0f),	// crate1
-        glm::vec3(2.5f, 1.0f, 0.0f),	// crate2
+        glm::vec3(-3.5f, 0.0f, -2.0f),	// crate1
+        glm::vec3(3.5f, 0.0f, -2.0f),	// crate2
         glm::vec3(0.0f, 0.0f, -2.0f),	// robot
-        glm::vec3(0.0f, 0.0f, 0.0f)		// floor
+        glm::vec3(0.0f, 0.0f, 0.0f),	// floor
+        glm::vec3(0.0f, 0.0f, 2.0f),    // pin
+        glm::vec3(-2.0f, 0.0f, 2.0f)    // bunny
     };
 
     // Model scale
@@ -66,10 +77,16 @@ int main()
         glm::vec3(1.0f, 1.0f, 1.0f),	// crate1
         glm::vec3(1.0f, 1.0f, 1.0f),	// crate2
         glm::vec3(1.0f, 1.0f, 1.0f),	// robot
-        glm::vec3(10.0f, 1.0f, 10.0f)	// floor
+        glm::vec3(10.0f, 1.0f, 10.0f),	// floor
+        glm::vec3(0.1f, 0.1f, 0.1f),    // pin
+        glm::vec3(0.7f, 0.7f, 0.7f)     // bunny
     };
 
+    Mesh lightMesh;
+    lightMesh.loadOBJ("models/light.obj");
+
     double lastTime = glfwGetTime();
+    float angle = 0.0f;
 
     // Main loop
     while (!glfwWindowShouldClose(gWindow))
@@ -90,21 +107,47 @@ int main()
 
         projection = glm::perspective(glm::radians(fpsCamera.getFOV()), (float)gWindowWidth / (float)gWindowHeight, 0.1f, 200.0f);    
 
-        shaderProgram.use();
+        glm::vec3 viewPos;
+        viewPos.x = fpsCamera.getPosition().x;
+        viewPos.y = fpsCamera.getPosition().y;
+        viewPos.z = fpsCamera.getPosition().z;
+
+        // the light
+        glm::vec3 lightPos(0.0f, 1.0f, 10.0f);
+        glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+
+        // move the light
+        angle += (float)deltaTime * 50.0;
+        lightPos.x += 8.0f * sinf(glm::radians((double)angle));
+
+
+        lightingShader.use();
 
         // Pass Model, View and Projection matricies to vertex shader
-        shaderProgram.setUniform("view", view);
-        shaderProgram.setUniform("projection", projection);
+        lightingShader.setUniform("view", view);
+        lightingShader.setUniform("projection", projection);
+        lightingShader.setUniform("lightColor", lightColor);
+        lightingShader.setUniform("lightPos", lightPos);
+        lightingShader.setUniform("viewPos", viewPos);
 
         for (int i = 0; i < numModels; i++)
         {
             model = glm::translate(glm::mat4(1.0), modelPos[i]) * glm::scale(glm::mat4(1.0), modelScale[i]);
-            shaderProgram.setUniform("model", model);
+            lightingShader.setUniform("model", model);
 
             texture[i].bind(0);		// set the texture before drawing.  Our simple OBJ mesh loader does not do materials yet.
             mesh[i].draw();			// Render the OBJ mesh
             texture[i].unbind(0);
         }
+
+        // render the light
+        model = glm::translate(glm::mat4(1.0), lightPos);
+        lightShader.use();
+        lightShader.setUniform("lightColor", lightColor);
+        lightShader.setUniform("model", model);
+        lightShader.setUniform("view", view);
+        lightShader.setUniform("projection", projection);
+        lightMesh.draw();
 
         glfwSwapBuffers(gWindow); // Allows for double buffering, which eliminates screen tearing
         lastTime = currentTime;

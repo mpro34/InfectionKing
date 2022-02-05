@@ -21,6 +21,7 @@ public:
 	const glm::vec3& getLook() const;
 	const glm::vec3& getRight() const;
 	const glm::vec3& getUp() const;
+	const glm::vec3& getPosition() const;
 
 	float getFOV() const { return m_FOV; }
 	void setFOV(float fov) { m_FOV = fov; }

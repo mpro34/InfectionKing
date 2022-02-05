@@ -32,6 +32,8 @@
     <ClInclude Include="Texture2D.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\lighting.frag" />
+    <None Include="shaders\lighting.vert" />
     <Text Include="shaders\basic.frag">
       <FileType>Document</FileType>
     </Text>
@@ -40,8 +42,14 @@
   <ItemGroup>
     <Image Include="textures\airplane.png" />
     <Image Include="textures\airplane_512x512.png" />
+    <Image Include="textures\AMF.tga" />
+    <Image Include="textures\barrel_diffuse.png" />
+    <Image Include="textures\barrel_spec.png" />
+    <Image Include="textures\bunny_diffuse.jpg" />
     <Image Include="textures\crate.jpg" />
     <Image Include="textures\grid.jpg" />
+    <Image Include="textures\lamp_post_diffuse.png" />
+    <Image Include="textures\light_diffuse.jpg" />
     <Image Include="textures\robot_diffuse.jpg" />
     <Image Include="textures\tile_floor.jpg" />
     <Image Include="textures\woodcrate_diffuse.jpg" />

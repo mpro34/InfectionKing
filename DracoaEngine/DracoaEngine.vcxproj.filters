@@ -52,6 +52,8 @@
     <None Include="shaders\basic.vert">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shaders\lighting.frag" />
+    <None Include="shaders\lighting.vert" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="shaders\basic.frag">
@@ -81,6 +83,22 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="textures\woodcrate_diffuse.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\AMF.tga" />
+    <Image Include="textures\barrel_diffuse.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\barrel_spec.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\bunny_diffuse.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\lamp_post_diffuse.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\light_diffuse.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

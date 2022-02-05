@@ -36,6 +36,11 @@ const glm::vec3& Camera::getUp() const
 	return m_up;
 }
 
+const glm::vec3& Camera::getPosition() const
+{
+	return m_position;
+}
+
 
 /* Orbit Camera */
 OrbitCamera::OrbitCamera() :

@@ -52,3 +52,11 @@ Version 1.0 of the Dracoa Engine shows rendering of a textured 3d cube with a fi
 Version 1.1 adds an OBJ file loading function which no longer uses hard coded vertices.
 ![alt text](screenshots/engine_v1.1.jpg)
 
+Added 2 parts of the Phong light model: Ambient and Diffuse to a new light bulb model.
+![alt text](screenshots/engine_v1.1_diffuse.jpg)
+
+
+#### Version 1.2 ####
+Completed the Phong lighting model by adding Specular lighting to the fragment shader.
+![alt text](screenshots/engine_v1.2_specular.jpg)
+
