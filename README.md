@@ -43,7 +43,8 @@ Later on, the Overmind gets physical abilties from consuming a wight. This inclu
 ## Progress ##
 
 #### Version 1.0 ####
-Version 1.0 of the Dracoa Engine shows rendering of a textured 3d cube with a first-person camera.
+Version 1.0 of the Dracoa Engine shows rendering of a textured 3d cube with a first-person camera. Also shows the frame stats in the title bar.
+
 ![alt text](screenshots/engine_v1.0.jpg)
 
 #### Version 1.1 ####
