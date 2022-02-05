@@ -76,9 +76,8 @@ bool Mesh::loadOBJ(const std::string& filename)
 				glm::vec3 vertex;
 				int dim = 0;
 				while (dim < 3 && ss >> vertex[dim])
-				{
 					dim++;
-				}
+
 				tempVertices.push_back(vertex);
 			}
 			else if (cmd == "vt")
@@ -86,9 +85,8 @@ bool Mesh::loadOBJ(const std::string& filename)
 				glm::vec2 uv;
 				int dim = 0;
 				while (dim < 2 && ss >> uv[dim])
-				{
 					dim++;
-				}
+
 				tempUVs.push_back(uv);
 			}
 			else if (cmd == "vn")
@@ -96,37 +94,39 @@ bool Mesh::loadOBJ(const std::string& filename)
 				glm::vec3 normal;
 				int dim = 0;
 				while (dim < 3 && ss >> normal[dim])
-				{
 					dim++;
-				}
 				normal = glm::normalize(normal);
 				tempNormals.push_back(normal);
 			}
 			else if (cmd == "f")
 			{
 				std::string faceData;
-				int vertexIndex, uvIndex, normalIndex;	// v/vt/n
+				int vertexIndex, uvIndex, normalIndex;
 
 				while (ss >> faceData)
 				{
 					std::vector<std::string> data = split(faceData, "/");
+
 					if (data[0].size() > 0)
 					{
 						sscanf_s(data[0].c_str(), "%d", &vertexIndex);
 						vertexIndices.push_back(vertexIndex);
 					}
-					// If texture coordinate exists
+
 					if (data.size() >= 1)
 					{
+						// Is face format v//vn?  If data[1] is empty string then
+						// this vertex has no texture coordinate
 						if (data[1].size() > 0)
 						{
 							sscanf_s(data[1].c_str(), "%d", &uvIndex);
 							uvIndices.push_back(uvIndex);
 						}
 					}
-					// If normal coordinate exists
+
 					if (data.size() >= 2)
 					{
+						// Does this vertex have a normal?
 						if (data[2].size() > 0)
 						{
 							sscanf_s(data[2].c_str(), "%d", &normalIndex);
@@ -145,6 +145,9 @@ bool Mesh::loadOBJ(const std::string& filename)
 		for (unsigned int i = 0; i < vertexIndices.size(); i++)
 		{
 			Vertex meshVertex;
+
+			// Get the attributes using the indices
+
 			if (tempVertices.size() > 0)
 			{
 				glm::vec3 vertex = tempVertices[vertexIndices[i] - 1];
@@ -163,7 +166,7 @@ bool Mesh::loadOBJ(const std::string& filename)
 				meshVertex.texCoords = uv;
 			}
 
-			m_vertices.push_back(meshVertex); // finally add new Vertex to list of Vertices
+			m_vertices.push_back(meshVertex);
 		}
 
 		// Create and initialize the buffers

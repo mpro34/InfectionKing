@@ -151,3 +151,23 @@ void ShaderProgram::setUniform(const GLchar* name, const glm::mat4& m)
     glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(m));
 }
 
+void ShaderProgram::setUniform(const GLchar* name, const GLfloat f)
+{
+    GLint loc = getUniformLocation(name);
+    glUniform1f(loc, f);
+}
+
+void ShaderProgram::setUniform(const GLchar* name, const GLint v)
+{
+    GLint loc = getUniformLocation(name);
+    glUniform1i(loc, v);
+}
+
+// Set active texture and pass uniform int to shader
+void ShaderProgram::setUniformSampler(const GLchar* name, const GLint& slot)
+{
+    glActiveTexture(GL_TEXTURE0 + slot);
+    GLint loc = getUniformLocation(name);
+    glUniform1i(loc, slot);
+}
+

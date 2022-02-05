@@ -29,6 +29,9 @@ void update(double elapsedTime);
 void showFPS(GLFWwindow* window);
 bool initOpenGL();
 
+//-----------------------------------------------------------------------------
+// Main Application Entry Point
+//-----------------------------------------------------------------------------
 int main()
 {
     if (!initOpenGL())
@@ -62,14 +65,17 @@ int main()
     texture[4].loadTexture("textures/AMF.tga", true);
     texture[5].loadTexture("textures/bunny_diffuse.jpg", true);
 
-    // Model Positions
+    Mesh lightMesh;
+    lightMesh.loadOBJ("models/light.obj");
+
+    // Model positions
     glm::vec3 modelPos[] = {
-        glm::vec3(-3.5f, 0.0f, -2.0f),	// crate1
-        glm::vec3(3.5f, 0.0f, -2.0f),	// crate2
+        glm::vec3(-3.5f, 0.0f, 0.0f),	// crate1
+        glm::vec3(3.5f, 0.0f, 0.0f),	// crate2
         glm::vec3(0.0f, 0.0f, -2.0f),	// robot
         glm::vec3(0.0f, 0.0f, 0.0f),	// floor
-        glm::vec3(0.0f, 0.0f, 2.0f),    // pin
-        glm::vec3(-2.0f, 0.0f, 2.0f)    // bunny
+        glm::vec3(0.0f, 0.0f, 2.0f),	// pin
+        glm::vec3(-2.0f, 0.0f, 2.0f)	// bunny
     };
 
     // Model scale
@@ -78,12 +84,9 @@ int main()
         glm::vec3(1.0f, 1.0f, 1.0f),	// crate2
         glm::vec3(1.0f, 1.0f, 1.0f),	// robot
         glm::vec3(10.0f, 1.0f, 10.0f),	// floor
-        glm::vec3(0.1f, 0.1f, 0.1f),    // pin
-        glm::vec3(0.7f, 0.7f, 0.7f)     // bunny
+        glm::vec3(0.1f, 0.1f, 0.1f),	// pin
+        glm::vec3(0.7f, 0.7f, 0.7f)		// bunny
     };
-
-    Mesh lightMesh;
-    lightMesh.loadOBJ("models/light.obj");
 
     double lastTime = glfwGetTime();
     float angle = 0.0f;
@@ -120,27 +123,34 @@ int main()
         angle += (float)deltaTime * 50.0;
         lightPos.x += 8.0f * sinf(glm::radians((double)angle));
 
-
+        // Must be called BEFORE setting uniforms because setting uniforms is done on the currently active shader program.
         lightingShader.use();
 
         // Pass Model, View and Projection matricies to vertex shader
         lightingShader.setUniform("view", view);
         lightingShader.setUniform("projection", projection);
-        lightingShader.setUniform("lightColor", lightColor);
-        lightingShader.setUniform("lightPos", lightPos);
         lightingShader.setUniform("viewPos", viewPos);
+        lightingShader.setUniform("light.position", lightPos);
+        lightingShader.setUniform("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+        lightingShader.setUniform("light.diffuse", lightColor);
+        lightingShader.setUniform("light.specular", glm::vec3(0.0f, 0.0f, 1.0f));
 
         for (int i = 0; i < numModels; i++)
         {
             model = glm::translate(glm::mat4(1.0), modelPos[i]) * glm::scale(glm::mat4(1.0), modelScale[i]);
             lightingShader.setUniform("model", model);
 
+            lightingShader.setUniform("material.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+            lightingShader.setUniformSampler("material.diffuseMap", 0);
+            lightingShader.setUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+            lightingShader.setUniform("material.shininess", 32.0f);
+
             texture[i].bind(0);		// set the texture before drawing.  Our simple OBJ mesh loader does not do materials yet.
             mesh[i].draw();			// Render the OBJ mesh
             texture[i].unbind(0);
         }
 
-        // render the light
+        // render the light sphere
         model = glm::translate(glm::mat4(1.0), lightPos);
         lightShader.use();
         lightShader.setUniform("lightColor", lightColor);

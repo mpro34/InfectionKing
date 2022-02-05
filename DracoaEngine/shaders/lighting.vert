@@ -14,7 +14,7 @@ uniform mat4 projection;
 
 void main()
 {
-    Normal = normal;
+    Normal = mat3(transpose(inverse(model))) * normal; // Fix normal for scaling
     FragPos = vec3(model * vec4(pos, 1.0f)); // position of incoming vertex in world space, not local space
 
     TexCoordinate = texCoord;
