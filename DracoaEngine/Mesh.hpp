@@ -10,6 +10,7 @@
 struct Vertex
 {
 	glm::vec3 position;
+	glm::vec3 normal; // used for lighting
 	glm::vec2 texCoords;
 };
 
