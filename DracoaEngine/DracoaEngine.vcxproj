@@ -34,6 +34,12 @@
   <ItemGroup>
     <None Include="shaders\lighting.frag" />
     <None Include="shaders\lighting.vert" />
+    <None Include="shaders\lighting_dir.frag" />
+    <None Include="shaders\lighting_dir.vert" />
+    <None Include="shaders\lighting_point.frag" />
+    <None Include="shaders\lighting_point.vert" />
+    <None Include="shaders\lighting_spot.frag" />
+    <None Include="shaders\lighting_spot.vert" />
     <Text Include="shaders\basic.frag">
       <FileType>Document</FileType>
     </Text>

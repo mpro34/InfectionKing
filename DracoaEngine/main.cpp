@@ -10,11 +10,12 @@
 #include "Camera.hpp"
 #include "Mesh.hpp"
 
-const char* ENGINE_TITLE = "Dracoa Engine v1.2";
+const char* ENGINE_TITLE = "Dracoa Engine v1.3";
 int gWindowWidth = 1024;
 int gWindowHeight = 768;
 GLFWwindow* gWindow = nullptr;
 bool gWireFrame = false;
+bool gFlashLightOn = true;
 
 FPSCamera fpsCamera(glm::vec3(0.0f, 3.0f, 10.0f));
 const double ZOOM_SENSITIVITY = -3.0;
@@ -44,10 +45,10 @@ int main()
     lightShader.loadShaders("shaders/basic.vert", "shaders/basic.frag");
 
     ShaderProgram lightingShader;
-    lightingShader.loadShaders("shaders/lighting.vert", "shaders/lighting.frag");
+    lightingShader.loadShaders("shaders/lighting_spot.vert", "shaders/lighting_spot.frag");
 
     // Load meshes and textures
-    const int numModels = 6;
+    const int numModels = 7;
     Mesh mesh[numModels];
     Texture2D texture[numModels];
 
@@ -57,6 +58,7 @@ int main()
     mesh[3].loadOBJ("models/floor.obj");
     mesh[4].loadOBJ("models/bowling_pin.obj");
     mesh[5].loadOBJ("models/bunny.obj");
+    mesh[6].loadOBJ("models/lampPost.obj");
 
     texture[0].loadTexture("textures/crate.jpg", true);
     texture[1].loadTexture("textures/woodcrate_diffuse.jpg", true);
@@ -64,9 +66,7 @@ int main()
     texture[3].loadTexture("textures/tile_floor.jpg", true);
     texture[4].loadTexture("textures/AMF.tga", true);
     texture[5].loadTexture("textures/bunny_diffuse.jpg", true);
-
-    Mesh lightMesh;
-    lightMesh.loadOBJ("models/light.obj");
+    texture[6].loadTexture("textures/lamp_post_diffuse.png", true);
 
     // Model positions
     glm::vec3 modelPos[] = {
@@ -75,7 +75,8 @@ int main()
         glm::vec3(0.0f, 0.0f, -2.0f),	// robot
         glm::vec3(0.0f, 0.0f, 0.0f),	// floor
         glm::vec3(0.0f, 0.0f, 2.0f),	// pin
-        glm::vec3(-2.0f, 0.0f, 2.0f)	// bunny
+        glm::vec3(-2.0f, 0.0f, 2.0f),	// bunny
+        glm::vec3(-5.0f, 0.0f, 0.0f)	// lamp post
     };
 
     // Model scale
@@ -85,7 +86,8 @@ int main()
         glm::vec3(1.0f, 1.0f, 1.0f),	// robot
         glm::vec3(10.0f, 1.0f, 10.0f),	// floor
         glm::vec3(0.1f, 0.1f, 0.1f),	// pin
-        glm::vec3(0.7f, 0.7f, 0.7f)		// bunny
+        glm::vec3(0.7f, 0.7f, 0.7f),	// bunny
+        glm::vec3(1.0f, 1.0f, 1.0f)		// lamp post
     };
 
     double lastTime = glfwGetTime();
@@ -116,12 +118,9 @@ int main()
         viewPos.z = fpsCamera.getPosition().z;
 
         // the light
-        glm::vec3 lightPos(0.0f, 1.0f, 10.0f);
+        glm::vec3 lightPos = fpsCamera.getPosition(); // Spot light acts as player flashlight
         glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-
-        // move the light
-        angle += (float)deltaTime * 50.0;
-        lightPos.x += 8.0f * sinf(glm::radians((double)angle));
+        lightPos.y -= 0.5f; // Move light down from camera to give the illusion holding a flashlight
 
         // Must be called BEFORE setting uniforms because setting uniforms is done on the currently active shader program.
         lightingShader.use();
@@ -130,10 +129,19 @@ int main()
         lightingShader.setUniform("view", view);
         lightingShader.setUniform("projection", projection);
         lightingShader.setUniform("viewPos", viewPos);
+
+        // Spot Light (flashlight)
         lightingShader.setUniform("light.position", lightPos);
-        lightingShader.setUniform("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+        lightingShader.setUniform("light.direction", fpsCamera.getLook());
+        lightingShader.setUniform("light.ambient", glm::vec3(0.5f, 0.5f, 0.5f));
         lightingShader.setUniform("light.diffuse", lightColor);
         lightingShader.setUniform("light.specular", glm::vec3(0.0f, 0.0f, 1.0f));
+        lightingShader.setUniform("light.constant", 0.3f);
+        lightingShader.setUniform("light.linear", 0.07f);
+        lightingShader.setUniform("light.exponent", 0.017f);
+        lightingShader.setUniform("light.cosInnerCone", glm::cos(glm::radians(15.0f)));
+        lightingShader.setUniform("light.cosOuterCone", glm::cos(glm::radians(20.0f)));
+        lightingShader.setUniform("light.on", gFlashLightOn);
 
         for (int i = 0; i < numModels; i++)
         {
@@ -149,15 +157,6 @@ int main()
             mesh[i].draw();			// Render the OBJ mesh
             texture[i].unbind(0);
         }
-
-        // render the light sphere
-        model = glm::translate(glm::mat4(1.0), lightPos);
-        lightShader.use();
-        lightShader.setUniform("lightColor", lightColor);
-        lightShader.setUniform("model", model);
-        lightShader.setUniform("view", view);
-        lightShader.setUniform("projection", projection);
-        lightMesh.draw();
 
         glfwSwapBuffers(gWindow); // Allows for double buffering, which eliminates screen tearing
         lastTime = currentTime;
@@ -226,7 +225,7 @@ void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
 
-    if (key == GLFW_KEY_F && action == GLFW_PRESS)
+    if (key == GLFW_KEY_Q && action == GLFW_PRESS)
     {
         gWireFrame = !gWireFrame;
         if (gWireFrame)
@@ -237,6 +236,11 @@ void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
         {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
+    }
+
+    if (key == GLFW_KEY_F && action == GLFW_PRESS)
+    {
+        gFlashLightOn = !gFlashLightOn;
     }
 }
 
