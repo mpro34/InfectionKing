@@ -33,6 +33,10 @@ Later on, the Overmind gets physical abilties from consuming a wight. This inclu
 - The player's goal is to get strong enough to defeat the Overmind King, thus becoming the new king.
 - In order to get strong enough, gain new abilities from consuming different types of wights.
 
+## Tasks ##
+- [ ] Code Organization 1 - separate lighting from model rendering / shaders
+- [ ] Code Organization 2 - use modern C++ standards and naming conventions, use proper error handling
+
 ## Technical Details ##
 
 - Modern C++17
