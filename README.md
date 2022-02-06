@@ -60,3 +60,7 @@ Added 2 parts of the Phong light model: Ambient and Diffuse to a new light bulb 
 Completed the Phong lighting model by adding Specular lighting to the fragment shader.
 ![alt text](screenshots/engine_v1.2_specular.jpg)
 
+
+#### Version 1.3 ####
+Added spot and point light shaders. Implement flashlight-type spot light with F toggle
+![alt text](screenshots/engine_v1.3.jpg)
