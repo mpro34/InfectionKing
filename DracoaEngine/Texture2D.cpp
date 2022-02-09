@@ -4,13 +4,13 @@
 #include <iostream>
 
 Texture2D::Texture2D() :
-	m_Texture(0)
+	m_texture(0)
 {
 }
 
 Texture2D::~Texture2D()
 {
-	glDeleteTextures(1, &m_Texture);
+	glDeleteTextures(1, &m_texture);
 }
 
 bool Texture2D::loadTexture(const std::string& filename, bool generateMipMaps)
@@ -45,8 +45,8 @@ bool Texture2D::loadTexture(const std::string& filename, bool generateMipMaps)
 	}
 
 	// Create opengl texture from image data
-	glGenTextures(1, &m_Texture);
-	glBindTexture(GL_TEXTURE_2D, m_Texture);
+	glGenTextures(1, &m_texture);
+	glBindTexture(GL_TEXTURE_2D, m_texture);
 	// Convert raw image coordinates and sample to texels (Texel Sampling), xy -> st
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -74,7 +74,7 @@ void Texture2D::bind(GLuint texUnit)
 
 	// Bind to the input texture unit; 16+ texture units on a modern graphics card!
 	glActiveTexture(GL_TEXTURE0 + texUnit);
-	glBindTexture(GL_TEXTURE_2D, m_Texture);
+	glBindTexture(GL_TEXTURE_2D, m_texture);
 }
 
 void Texture2D::unbind(GLuint texUnit)

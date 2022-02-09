@@ -11,13 +11,13 @@
 #include "Mesh.hpp"
 
 const char* ENGINE_TITLE = "Dracoa Engine v1.3";
-int gWindowWidth = 1024;
-int gWindowHeight = 768;
-GLFWwindow* gWindow = nullptr;
-bool gWireFrame = false;
-bool gFlashLightOn = true;
+int g_window_width = 1024;
+int g_window_height = 768;
+GLFWwindow* g_window = nullptr;
+bool g_wire_frame = false;
+bool g_flash_light_on = true;
 
-FPSCamera fpsCamera(glm::vec3(0.0f, 3.0f, 10.0f));
+FPSCamera g_fps_camera(glm::vec3(0.0f, 3.0f, 10.0f));
 const double ZOOM_SENSITIVITY = -3.0;
 const float MOVE_SPEED = 5.0f; // units per second
 const float MOUSE_SENSITIVITY = 0.1f;
@@ -94,9 +94,9 @@ int main()
     float angle = 0.0f;
 
     // Main loop
-    while (!glfwWindowShouldClose(gWindow))
+    while (!glfwWindowShouldClose(g_window))
     {
-        showFPS(gWindow);
+        showFPS(g_window);
 
         double currentTime = glfwGetTime();
         double deltaTime = currentTime - lastTime; // time per frame
@@ -108,17 +108,17 @@ int main()
 
         glm::mat4 model(1.0), view(1.0), projection(1.0);
         
-        view = fpsCamera.getViewMatrix();
+        view = g_fps_camera.getViewMatrix();
 
-        projection = glm::perspective(glm::radians(fpsCamera.getFOV()), (float)gWindowWidth / (float)gWindowHeight, 0.1f, 200.0f);    
+        projection = glm::perspective(glm::radians(g_fps_camera.getFOV()), (float)g_window_width / (float)g_window_height, 0.1f, 200.0f);    
 
         glm::vec3 viewPos;
-        viewPos.x = fpsCamera.getPosition().x;
-        viewPos.y = fpsCamera.getPosition().y;
-        viewPos.z = fpsCamera.getPosition().z;
+        viewPos.x = g_fps_camera.getPosition().x;
+        viewPos.y = g_fps_camera.getPosition().y;
+        viewPos.z = g_fps_camera.getPosition().z;
 
         // the light
-        glm::vec3 lightPos = fpsCamera.getPosition(); // Spot light acts as player flashlight
+        glm::vec3 lightPos = g_fps_camera.getPosition(); // Spot light acts as player flashlight
         glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
         lightPos.y -= 0.5f; // Move light down from camera to give the illusion holding a flashlight
 
@@ -132,7 +132,7 @@ int main()
 
         // Spot Light (flashlight)
         lightingShader.setUniform("light.position", lightPos);
-        lightingShader.setUniform("light.direction", fpsCamera.getLook());
+        lightingShader.setUniform("light.direction", g_fps_camera.getLook());
         lightingShader.setUniform("light.ambient", glm::vec3(0.5f, 0.5f, 0.5f));
         lightingShader.setUniform("light.diffuse", lightColor);
         lightingShader.setUniform("light.specular", glm::vec3(0.0f, 0.0f, 1.0f));
@@ -141,7 +141,7 @@ int main()
         lightingShader.setUniform("light.exponent", 0.017f);
         lightingShader.setUniform("light.cosInnerCone", glm::cos(glm::radians(15.0f)));
         lightingShader.setUniform("light.cosOuterCone", glm::cos(glm::radians(20.0f)));
-        lightingShader.setUniform("light.on", gFlashLightOn);
+        lightingShader.setUniform("light.on", g_flash_light_on);
 
         for (int i = 0; i < numModels; i++)
         {
@@ -158,7 +158,7 @@ int main()
             texture[i].unbind(0);
         }
 
-        glfwSwapBuffers(gWindow); // Allows for double buffering, which eliminates screen tearing
+        glfwSwapBuffers(g_window); // Allows for double buffering, which eliminates screen tearing
         lastTime = currentTime;
     }
 
@@ -182,8 +182,8 @@ bool initOpenGL()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // Create a window with glfw, fullscreen or windowed
-    gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, ENGINE_TITLE, nullptr, nullptr);
-    if (gWindow == nullptr)
+    g_window = glfwCreateWindow(g_window_width, g_window_height, ENGINE_TITLE, nullptr, nullptr);
+    if (g_window == nullptr)
     {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -191,7 +191,7 @@ bool initOpenGL()
     }
 
     // Make the created window current to draw to.
-    glfwMakeContextCurrent(gWindow);
+    glfwMakeContextCurrent(g_window);
 
     // Must set to true in order to use modern opengl
     glewExperimental = GL_TRUE;
@@ -201,16 +201,16 @@ bool initOpenGL()
         return false;
     }
 
-    glfwSetKeyCallback(gWindow, glfw_onKey);
-    glfwSetScrollCallback(gWindow, glfw_onMouseScroll);
+    glfwSetKeyCallback(g_window, glfw_onKey);
+    glfwSetScrollCallback(g_window, glfw_onMouseScroll);
 
     // Hides and grabs cursor, unlimited movement
-    glfwSetInputMode(gWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetCursorPos(gWindow, gWindowWidth / 2.0f, gWindowHeight / 2.0f);
+    glfwSetInputMode(g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPos(g_window, g_window_width / 2.0f, g_window_height / 2.0f);
 
     glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
 
-    glViewport(0, 0, gWindowWidth, gWindowHeight);
+    glViewport(0, 0, g_window_width, g_window_height);
     //Enable the depth buffer to show depth in 3D
     glEnable(GL_DEPTH_TEST);
 
@@ -227,8 +227,8 @@ void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
 
     if (key == GLFW_KEY_Q && action == GLFW_PRESS)
     {
-        gWireFrame = !gWireFrame;
-        if (gWireFrame)
+        g_wire_frame = !g_wire_frame;
+        if (g_wire_frame)
         {
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         }
@@ -240,26 +240,26 @@ void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
 
     if (key == GLFW_KEY_F && action == GLFW_PRESS)
     {
-        gFlashLightOn = !gFlashLightOn;
+        g_flash_light_on = !g_flash_light_on;
     }
 }
 
 //
 void glfw_OnFrameBufferSize(GLFWwindow* window, int width, int height)
 {
-    gWindowWidth = width;
-    gWindowHeight = height;
+    g_window_width = width;
+    g_window_height = height;
     glViewport(0, 0, width, height);
 }
 
 // Called by GLFW when the mouse wheel is rotated
 void glfw_onMouseScroll(GLFWwindow* window, double deltaX, double deltaY)
 {
-    double fov = fpsCamera.getFOV() + deltaY * ZOOM_SENSITIVITY;
+    double fov = g_fps_camera.getFOV() + deltaY * ZOOM_SENSITIVITY;
 
     fov = glm::clamp(fov, 1.0, 120.0);
 
-    fpsCamera.setFOV((float)fov);
+    g_fps_camera.setFOV((float)fov);
 }
 
 // Update stuff every frame
@@ -269,44 +269,44 @@ void update(double elapsedTime)
     double mouseX, mouseY;
 
     // Get the current mouse cursor position delta
-    glfwGetCursorPos(gWindow, &mouseX, &mouseY);
+    glfwGetCursorPos(g_window, &mouseX, &mouseY);
 
     // Rotate the camera the difference in mouse distance from the center screen. Multiply this delta by a speed scaler
-    fpsCamera.rotate((float)(gWindowWidth / 2.0 - mouseX) * MOUSE_SENSITIVITY, (float(gWindowHeight / 2.0 - mouseY) * MOUSE_SENSITIVITY));
+    g_fps_camera.rotate((float)(g_window_width / 2.0 - mouseX) * MOUSE_SENSITIVITY, (float(g_window_height / 2.0 - mouseY) * MOUSE_SENSITIVITY));
 
     // Clamp mouse cursor to center of screen
-    glfwSetCursorPos(gWindow, gWindowWidth / 2.0, gWindowHeight / 2.0);
+    glfwSetCursorPos(g_window, g_window_width / 2.0, g_window_height / 2.0);
 
     // Camera FPS Movement
 
     // Forward/Backward
-    if (glfwGetKey(gWindow, GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(g_window, GLFW_KEY_W) == GLFW_PRESS)
     {
-        fpsCamera.move(MOVE_SPEED * (float)elapsedTime * fpsCamera.getLook());
+        g_fps_camera.move(MOVE_SPEED * (float)elapsedTime * g_fps_camera.getLook());
     }
-    else if (glfwGetKey(gWindow, GLFW_KEY_S) == GLFW_PRESS)
+    else if (glfwGetKey(g_window, GLFW_KEY_S) == GLFW_PRESS)
     {
-        fpsCamera.move(MOVE_SPEED * (float)elapsedTime * -fpsCamera.getLook());
+        g_fps_camera.move(MOVE_SPEED * (float)elapsedTime * -g_fps_camera.getLook());
     }
 
     // Strafe Left/Right
-    if (glfwGetKey(gWindow, GLFW_KEY_D) == GLFW_PRESS)
+    if (glfwGetKey(g_window, GLFW_KEY_D) == GLFW_PRESS)
     {
-        fpsCamera.move(MOVE_SPEED * (float)elapsedTime * fpsCamera.getRight());
+        g_fps_camera.move(MOVE_SPEED * (float)elapsedTime * g_fps_camera.getRight());
     }
-    else if (glfwGetKey(gWindow, GLFW_KEY_A) == GLFW_PRESS)
+    else if (glfwGetKey(g_window, GLFW_KEY_A) == GLFW_PRESS)
     {
-        fpsCamera.move(MOVE_SPEED * (float)elapsedTime * -fpsCamera.getRight());
+        g_fps_camera.move(MOVE_SPEED * (float)elapsedTime * -g_fps_camera.getRight());
     }
 
     // Up/Down
-    if (glfwGetKey(gWindow, GLFW_KEY_Z) == GLFW_PRESS)
+    if (glfwGetKey(g_window, GLFW_KEY_Z) == GLFW_PRESS)
     {
-        fpsCamera.move(MOVE_SPEED * (float)elapsedTime * fpsCamera.getUp());
+        g_fps_camera.move(MOVE_SPEED * (float)elapsedTime * g_fps_camera.getUp());
     }
-    else if (glfwGetKey(gWindow, GLFW_KEY_X) == GLFW_PRESS)
+    else if (glfwGetKey(g_window, GLFW_KEY_X) == GLFW_PRESS)
     {
-        fpsCamera.move(MOVE_SPEED * (float)elapsedTime * -fpsCamera.getUp());
+        g_fps_camera.move(MOVE_SPEED * (float)elapsedTime * -g_fps_camera.getUp());
     }
 }
 

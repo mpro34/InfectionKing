@@ -15,7 +15,7 @@ public:
 
 private:
 
-	GLuint m_Texture{ 0 };
+	GLuint m_texture{ 0 };
 
 };
 

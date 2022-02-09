@@ -37,7 +37,7 @@ private:
 	void checkCompileErrors(GLuint shader, ShaderType type);
 	GLint getUniformLocation(const GLchar* name);
 	
-	GLuint m_Handle;
-	std::map<std::string, GLint> m_UniformLocations;
+	GLuint m_handle;
+	std::map<std::string, GLint> m_uniform_locations;
 };
 

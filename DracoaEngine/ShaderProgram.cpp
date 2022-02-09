@@ -5,14 +5,14 @@
 #include "glm/gtc/type_ptr.hpp"
 
 ShaderProgram::ShaderProgram() :
-	m_Handle(0)
+	m_handle(0)
 {
 
 }
 
 ShaderProgram::~ShaderProgram()
 {
-	glDeleteProgram(m_Handle);
+	glDeleteProgram(m_handle);
 }
 
 bool ShaderProgram::loadShaders(const char* vsFilesname, const char* fsFilename)
@@ -35,26 +35,26 @@ bool ShaderProgram::loadShaders(const char* vsFilesname, const char* fsFilename)
     checkCompileErrors(fs, ShaderType::FRAGMENT);
 
     // Create the shader program with all compiled shaders above (vertex and fragment)
-    m_Handle = glCreateProgram();
-    glAttachShader(m_Handle, vs);
-    glAttachShader(m_Handle, fs);
-    glLinkProgram(m_Handle);
-    checkCompileErrors(m_Handle, ShaderType::PROGRAM);
+    m_handle = glCreateProgram();
+    glAttachShader(m_handle, vs);
+    glAttachShader(m_handle, fs);
+    glLinkProgram(m_handle);
+    checkCompileErrors(m_handle, ShaderType::PROGRAM);
 
     // Once shader program is created, we can free the shader memory before entering the game loop.
     glDeleteShader(vs);
     glDeleteShader(fs);
 
-    m_UniformLocations.clear();
+    m_uniform_locations.clear();
 
 	return true;
 }
 
 void ShaderProgram::use()
 {
-	if (m_Handle > 0)
+	if (m_handle > 0)
 	{
-		glUseProgram(m_Handle);
+		glUseProgram(m_handle);
 	}
 }
 
@@ -86,13 +86,13 @@ void ShaderProgram::checkCompileErrors(GLuint shader, ShaderType type)
     int status = 0;
     if (type == ShaderType::PROGRAM)
     {
-        glGetProgramiv(m_Handle, GL_LINK_STATUS, &status);
+        glGetProgramiv(m_handle, GL_LINK_STATUS, &status);
         if (status == GL_FALSE)
         {
             GLint length = 0;
-            glGetProgramiv(m_Handle, GL_INFO_LOG_LENGTH, &length);
+            glGetProgramiv(m_handle, GL_INFO_LOG_LENGTH, &length);
             std::string errorLog(length, ' ');
-            glGetProgramInfoLog(m_Handle, length, &length, &errorLog[0]);
+            glGetProgramInfoLog(m_handle, length, &length, &errorLog[0]);
             std::cerr << "Error! Program failed to link. " << errorLog << std::endl;
         }
     }
@@ -112,19 +112,19 @@ void ShaderProgram::checkCompileErrors(GLuint shader, ShaderType type)
 
 GLuint ShaderProgram::getProgram() const
 {
-    return m_Handle;
+    return m_handle;
 }
 
 GLint ShaderProgram::getUniformLocation(const GLchar* name)
 {
-    std::map<std::string, GLint>::iterator it = m_UniformLocations.find(name);
+    std::map<std::string, GLint>::iterator it = m_uniform_locations.find(name);
 
-    if (it == m_UniformLocations.end())
+    if (it == m_uniform_locations.end())
     {
-        m_UniformLocations[name] = glGetUniformLocation(m_Handle, name);
+        m_uniform_locations[name] = glGetUniformLocation(m_handle, name);
     }
 
-    return m_UniformLocations[name];
+    return m_uniform_locations[name];
 }
 
 void ShaderProgram::setUniform(const GLchar* name, const glm::vec2& v)
