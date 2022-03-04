@@ -29,13 +29,26 @@ Later on, the Overmind gets physical abilties from consuming a wight. This inclu
 - The weakest Dracoa (wights), can be consumed using your pheremones to attract them. Pheremones do little damage to wild Dracoa.
 - TODO: Mock HUD - Autodesk Sketchbook
 
-## Goal ##
+## Primary Goal - 3D Scene Editor
+The goal of this game engine is to support importing models, navigate around 3D space (much like in Unreal Engine), add various custom lighting effects and shadows to objects. Be able to add a "Player Camera" that is able to be played from. To help support the above features, a simple user interface that is similar to Unreal Engine.
+
+## Secondary Goal - game ##
 - The player's goal is to get strong enough to defeat the Overmind King, thus becoming the new king.
 - In order to get strong enough, gain new abilities from consuming different types of wights.
+
+In order to implement various graphics techniques, this engine is a common platform for easily developing new shaders.
 
 ## Tasks ##
 - [ ] Code Organization 1 - separate lighting from model rendering / shaders
 - [ ] Code Organization 2 - use modern C++ standards and naming conventions, use proper error handling
+- [ ] Navigation around a 3D space, like Unreal Engine.
+- [ ] Importing .obj files, a user-interface for importing.
+- [ ] Add default lighting/shadows.                        
+- [ ] Add custom lighting/shadows in various shader files. 
+- [ ] Add UI to edit lighting and shaders, in real-time.   
+- [ ] User interface (imgui) to support an editor          
+- [ ] Add ability to add a single Player Camera.          
+- [ ] Add ability to take control of the placed player camera.
 
 ## Technical Details ##
 
