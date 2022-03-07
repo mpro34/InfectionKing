@@ -19,7 +19,7 @@ bool g_flash_light_on = true;
 
 FPSCamera g_fps_camera(glm::vec3(0.0f, 3.0f, 10.0f));
 const double ZOOM_SENSITIVITY = -3.0;
-const float MOVE_SPEED = 5.0f; // units per second
+const float MOVE_SPEED = 7.0f; // units per second
 const float MOUSE_SENSITIVITY = 0.1f;
 
 // Function Prototypes
@@ -41,8 +41,8 @@ int main()
         return -1;
     }
 
-    ShaderProgram lightShader;
-    lightShader.loadShaders("shaders/basic.vert", "shaders/basic.frag");
+    //ShaderProgram lightShader;
+    //lightShader.loadShaders("shaders/basic.vert", "shaders/basic.frag");
 
     ShaderProgram lightingShader;
     lightingShader.loadShaders("shaders/lighting_spot.vert", "shaders/lighting_spot.frag");
@@ -205,7 +205,7 @@ bool initOpenGL()
     glfwSetScrollCallback(g_window, glfw_onMouseScroll);
 
     // Hides and grabs cursor, unlimited movement
-    glfwSetInputMode(g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(g_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     glfwSetCursorPos(g_window, g_window_width / 2.0f, g_window_height / 2.0f);
 
     glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
