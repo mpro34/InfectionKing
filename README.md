@@ -39,12 +39,14 @@ The goal of this game engine is to support importing models, navigate around 3D 
 In order to implement various graphics techniques, this engine is a common platform for easily developing new shaders.
 
 ## Tasks ##
-- [ ] Code Organization 1 - separate lighting from model rendering / shaders
-- [ ] Code Organization 2 - use modern C++ standards and naming conventions, use proper error handling
+- [X] Code Organization - use modern C++ standards and naming conventions, use proper error handling
 - [ ] Navigation around a 3D space, like Unreal Engine.
+- [ ] Ability to select objects in the scene.
+- [ ] Ability to translate, rotate scale objects in the scene.
 - [ ] Importing .obj files, a user-interface for importing.
 - [ ] Add default lighting/shadows.                        
 - [ ] Add custom lighting/shadows in various shader files. 
+- [ ] Separate lighting from model rendering / shaders
 - [ ] Add UI to edit lighting and shaders, in real-time.   
 - [ ] User interface (imgui) to support an editor          
 - [ ] Add ability to add a single Player Camera.          
