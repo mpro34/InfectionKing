@@ -22,7 +22,10 @@ The Overminds and only run and dodge from a distance.
 
 Later on, the Overmind gets physical abilties from consuming a wight. This includes the abilities to attack and defend without wights, etc.
 
-## Gameplay ##
+## Gameplay (new) june2022 ##
+A top-down tower defense game. This should be a 2.5D game where 1 to 4 players choose a starting Dracoa. Each wave of enemies is trying to destroy a home base. The player is in control of a unit that is able to build towers.
+
+## Gameplay (old) ##
 - 3rd Person action/shooter
 - You start as a newly evolved Overmind who can only melee and shoot pheremones. You have basic actions like running and jumping.
 - Enemies will be wild Dracoa or mysterious Overminds.
