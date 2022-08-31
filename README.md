@@ -22,8 +22,8 @@ The Overminds and only run and dodge from a distance.
 
 Later on, the Overmind gets physical abilties from consuming a wight. This includes the abilities to attack and defend without wights, etc.
 
-## Gameplay (new) june2022 ##
-A top-down tower defense game. This should be a 2.5D game where 1 to 4 players choose a starting Dracoa. Each wave of enemies is trying to destroy a home base. The player is in control of a unit that is able to build towers.
+## Gameplay (new) 2022 ##
+A 2.5D platformer with a relatively large map to explore. You start as an overmind with no ability to attack. You are able to mind-control packs of wights that enable you to use various abilities. You can also ingest a group of wights to upgrade yourself. Your goal is to reach the end of the map, if you die, you can take over an existing wight. You will encounter other overmind with different abilities. If you have no wights and die, you respawn at the start.
 
 ## Gameplay (old) ##
 - 3rd Person action/shooter
