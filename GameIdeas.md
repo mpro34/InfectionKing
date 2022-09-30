@@ -1,4 +1,10 @@
-# Idea 1 - More Solid!
+# TODOs in Order of Preference:
+- [ ] Character, Ability, Weapon, and Enemy Art
+- [ ] Character Gameplay
+- [ ] Ability and Weapon Gameplay
+- [ ] Enemy AI
+- [ ] Game Modes
+
 ### Story
 The year is 3000 AD; a deadly virus has ravaged life on earth. After decades, three groups of humans were established; the infected, the normals, and the specials. You are a special trying to restore some semblance of peace on earth as part of the World Government. The specials are infected humans who have undergone mutations from the infection, but have kept their knowledge and have gained additional abilities. The leader of the specials, who orchestrates the specials kingdom, is known as the Infection King.
 
